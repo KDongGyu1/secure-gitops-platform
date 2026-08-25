@@ -17,7 +17,9 @@ def create_item(item: ItemCreate, db: Session = Depends(get_db)) -> ItemResponse
 
 
 @router.get("", response_model=list[ItemResponse])
-def get_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)) -> list[ItemResponse]:
+def get_items(
+    skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
+) -> list[ItemResponse]:
     items = db.query(ItemModel).offset(skip).limit(limit).all()
     return items
 
@@ -27,19 +29,19 @@ def get_item(item_id: int, db: Session = Depends(get_db)) -> ItemResponse:
     item = db.query(ItemModel).filter(ItemModel.id == item_id).first()
     if not item:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Item {item_id} not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Item {item_id} not found"
         )
     return item
 
 
 @router.patch("/{item_id}", response_model=ItemResponse)
-def update_item(item_id: int, item: ItemUpdate, db: Session = Depends(get_db)) -> ItemResponse:
+def update_item(
+    item_id: int, item: ItemUpdate, db: Session = Depends(get_db)
+) -> ItemResponse:
     db_item = db.query(ItemModel).filter(ItemModel.id == item_id).first()
     if not db_item:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Item {item_id} not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Item {item_id} not found"
         )
     if item.name is not None:
         db_item.name = item.name
@@ -55,8 +57,7 @@ def delete_item(item_id: int, db: Session = Depends(get_db)) -> None:
     db_item = db.query(ItemModel).filter(ItemModel.id == item_id).first()
     if not db_item:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Item {item_id} not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Item {item_id} not found"
         )
     db.delete(db_item)
     db.commit()
